@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fancy-weather</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css" rel="stylesheet" />
+</head>
+
+<body id="body">
+
+  <div class="wrapper_overlay">
+    <header>
+      <div class="wrapper_controls">
+        <div class="control">
+          <button id="control_button" class="control_button">
+            <img src="./img/refresh.svg" alt="refresh" class="refresh_image" />
+          </button>
+          <div class="control_button languages">
+            <div id="language_en" class="control_button language active">EN</div>
+            <div id="language_ru" class="control_button language not_active">RU</div>
+            <img src="./img/arrow.svg" alt="arrow" class="arrow-image" />
+          </div>
+          <button id="farenheit" class="control_button farenheit">
+            &deg;F
+          </button>
+          <button id="celsius" class="control_button celsius active">&deg;C</button>
+        </div>
+
+        <div class="search">
+          <input type="text" class="search_input" placeholder="Search city or ZIP" />
+          <button id="search_button" class="search_button">SEARCH</button>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="wrapper">
+        <div class="wrapper_weatherNow">
+          <div class="wrapper_location">
+            <span id="location_city" class="location_city"></span>
+            <div class="date_and_time">
+              <div class="date_now"></div>
+              <div class="time_now"></div>
+            </div>
+          </div>
+          <div class="wrapper_now">
+            <div class="tempreture_now"></div>
+            <div class="summary_weather">
+              <span class="icon_weatherNow"></span>
+              <span id="overcast"></span>
+              <span id="feelsLike"></span>
+              <span id="speedWind"></span>
+              <span id="humidity"></span>
+            </div>
+          </div>
+        </div>
+        <div class="wrapper_weatherThree">
+          <div class="days">
+            <div id="firstDay" class="day_ofWeek"></div>
+            <div class="one_day">
+              <div id="firstTemperature"></div>
+              <span class="icon_one"></span>
+            </div>
+          </div>
+          <div class="days">
+            <div id="secondDay" class="day_ofWeek"></div>
+            <div class="one_day">
+              <div id="secondTemperature"></div>
+              <span class="icon_two"></span>
+            </div>
+          </div>
+          <div class="days">
+            <div id="thirdDay" class="day_ofWeek"></div>
+            <div class="one_day">
+              <div id="thirdTemperature"></div>
+              <span class="icon_three"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="maps">
+        <div id="map" class="map"></div>
+        <div class="koordinats">
+          <div class="latitude"></div>
+          <div class="longitude"></div>
+        </div>
+      </div>
+      <div id="map"></div>
+    </main>
+  </div>
+</body>
+<script src="./dist/main.js"></script>
+</html>

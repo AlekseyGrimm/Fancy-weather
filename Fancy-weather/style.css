@@ -1,0 +1,360 @@
+* {
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  color: white;
+}
+
+body {
+  min-height: 100vh;
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  background-image: url("https://images.wallpaperscraft.ru/image/ozero_gory_derevia_129959_1280x720.jpg");
+  background-size: cover;
+}
+
+.wrapper_overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+  height: 100vh;
+}
+
+.wrapper {
+  width: 65%;
+}
+
+main {
+  display: flex;
+  flex-direction: row;
+  padding: 40px 0 0 20px;
+}
+/* HEADER */
+
+.wrapper_controls {
+  margin: 0 auto;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.control {
+  display: flex;
+}
+
+.control_button,
+.search_button {
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  margin: 0 10px;
+  border-radius: 5px;
+  border: none;
+  color: #ffffff;
+  background-color: #ffffff54;
+  padding: 0px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.control_button:focus,
+.search_button:focus {
+  outline: none;
+}
+
+.refresh_image {
+  width: 100%;
+  height: 100%;
+}
+
+.arrow-image {
+  width: 15%;
+  transform: translateY(-2px);
+}
+
+.farenheit {
+  border-radius: 10px 0 0 10px;
+}
+
+.celsius {
+  border-radius: 0 10px 10px 0;
+  margin-left: -10px;
+}
+
+.languages {
+  line-height: 50px;
+  padding-left: 5px;
+  position: relative;
+}
+
+.language {
+  position: absolute;
+  width: 100%;
+  left: -10px;
+  top: 0;
+  opacity: 0;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.active {
+  opacity: 1;
+}
+
+.languages:hover .not_active {
+  opacity: 1;
+  left: -10px;
+  top: 50px;
+  width: 100%;
+}
+
+.control_button:hover,
+.search_button:hover,
+.active {
+  background-color: rgba(174, 181, 185, 0.123);
+}
+
+.arrow-image {
+  transition: 0.5s;
+}
+
+.languages:hover .arrow-image {
+  transform: rotate(180deg) translateY(2px);
+}
+
+.search_input {
+  height: 50px;
+  color: #ffffff;
+  background-color: rgba(76, 82, 85, 0.4);
+  border: 1px solid rgba(228, 227, 227, 0.2);
+  border-radius: 10px 0 0 10px;
+  outline: none;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+.search_button {
+  width: 100px;
+  border-radius: 0 10px 10px 0;
+  margin-left: -5px;
+}
+
+/* WEATHER NOW */
+
+.wrapper_weatherNow {
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper_location {
+  flex-direction: column;
+}
+
+.wrapper_now {
+  display: flex;
+  flex-direction: row;
+}
+
+.summary_weather {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.location_city {
+  font-weight: 700;
+  font-size: 44px;
+}
+
+.date_and_time {
+  display: flex;
+  flex-direction: row;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.date_now {
+  width: 40%;
+}
+
+.tempreture_now {
+  font-size: 180px;
+  width: 55vh;
+  margin: auto 10px auto 0;
+  text-align: center;
+}
+
+.icon_weatherNow {
+  width: 100px;
+  height: 100px;
+  background-size: 100% 100%;
+}
+
+/* WEATHER THREE */
+
+.wrapper_weatherThree {
+  display: flex;
+  flex-direction: row;
+  padding: 10px 0px 0px 0px;
+  width: 90%;
+}
+
+.days {
+  width: 33.3%;
+  font-size: 40px;
+  font-weight: 600;
+}
+
+.one_day {
+  display: flex;
+  padding-top: 10px;
+}
+
+.day_ofWeek {
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.icon_one {
+  background-size: 100% 100%;
+  width: 60px;
+  height: 60px;
+}
+
+.icon_two {
+  background-size: 100% 100%;
+  width: 60px;
+  height: 60px;
+}
+
+.icon_three {
+  background-size: 100% 100%;
+  width: 60px;
+  height: 60px;
+}
+
+/* MAPS */
+.maps {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.map {
+  width: 30vw;
+  height: 30vw;
+  background-color: white;
+  border: none;
+  outline: none;
+}
+
+.koordinats {
+  padding-top: 10px;
+}
+
+@media screen and (min-width: 680px) and (max-width: 940px) {
+  .location_city {
+    font-size: 25px;
+  }
+  .tempreture_now {
+    width: 37vh;
+    font-size: 125px;
+  }
+  .date_and_time {
+    font-size: 15px;
+  }
+
+  .summary_weather {
+    font-size: 21px;
+  }
+
+  .day_ofWeek {
+    font-size: 20px;
+  }
+}
+
+@media screen and (min-width: 320px) and (max-width: 680px) {
+  .wrapper_controls {
+    padding: 5px 5px 20px 5px;
+  }
+
+  .control_button {
+    width: 30px;
+    height: 30px;
+  }
+  .search_input {
+    height: 30px;
+    width: 55px;
+  }
+  .search_button {
+    height: 30px;
+    width: 60px;
+  }
+  .languages {
+    line-height: 30px;
+  }
+
+  .languages:hover .not_active {
+    opacity: 1;
+    left: -10px;
+    top: 30px;
+    width: 100%;
+  }
+
+  .search_input::placeholder {
+    font-size: 6px;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+  }
+
+  .wrapper {
+    align-items: center;
+    width: 100%;
+  }
+
+  .location_city {
+    font-size: 25px;
+  }
+
+  .date_and_time {
+    font-size: 15px;
+  }
+
+  .wrapper_now {
+    width: 100%;
+  }
+
+  .tempreture_now {
+    width: 60%;
+    font-size: 80px;
+  }
+  .summary_weather {
+    font-size: 15px;
+  }
+  .wrapper_weatherThree {
+    width: 100%;
+  }
+  .days {
+    font-size: 15px;
+  }
+  .day_ofWeek {
+    font-size: 13px;
+  }
+  .map {
+    width: 80vw;
+  }
+  .maps {
+    padding-top: 5px;
+    width: auto;
+  }
+}
