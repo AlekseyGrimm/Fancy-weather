@@ -134,27 +134,30 @@ window.addEventListener("load", function () {
     };
 
     async function showSearchCity(city) {
+        console.log(city);
         try {
             if (!city) {
                 city = inputCity.value;
             }
             adress = await searchSity(city);
-
+            
 
             if (adress) {
                 const result = adress.results[0].components;
                 city = result.city ? result.city : result.town ? result.town : result.village;
                 
-                localStorage.setItem("city", city); // save city in localStorage
-                inputCity.value = "";
-
                 const { country } = result;
                 locationCity.textContent = `${city}, ${country}`;
+
+                localStorage.setItem("city", city); // save city in localStorage
+                // inputCity.value = "";
 
                 const Now = adress.results[0].geometry;
 
                 LatitudeNow = Now.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
                 LongitudeNow = Now.lng.toFixed(2);
+
+
 
                 showWeatherNow(city);
                 getMap(LatitudeNow, LongitudeNow);
@@ -260,7 +263,7 @@ window.addEventListener("load", function () {
     };
 
     // if the city is not found then displays a map with coordinates
-    function initializeCity() {
+    function initializeCity(city) {
         if (city) {
             showSearchCity(city);
         } else {
@@ -268,7 +271,7 @@ window.addEventListener("load", function () {
         }
     };
 
-    initializeCity();
+    initializeCity(city);
 
 
     function getCoordinats(latitudeNow, longitudeNow) {
@@ -302,7 +305,9 @@ window.addEventListener("load", function () {
     // add inter
     function KeyBoard(e) {
         if (e.which === 13) {
-            showSearchCity();
+            console.log(e);
+            showSearchCity(e.target.value);
+
         }
     };
 
