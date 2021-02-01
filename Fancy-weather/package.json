@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AlekseyGrimm/rsschool-cv/tree/Fancy-weather.git"
+    "url": "git+https://github.com/AlekseyGrimm/Fancy-weather.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/AlekseyGrimm/rsschool-cv/tree/Fancy-weather"
+    "url": "https://github.com/AlekseyGrimm/Fancy-weather"
   },
-  "homepage": "#",
+  "homepage": "https://github.com/AlekseyGrimm/Fancy-weather#readme",
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/plugin-transform-runtime": "^7.12.10",
