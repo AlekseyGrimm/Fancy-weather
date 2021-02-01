@@ -6,6 +6,8 @@ import "./style.css";
 window.addEventListener("load", function () {
     let latitudeNow;
     let longitudeNow;
+    let weather;
+    let adress;
     const buttonRefresh = document.querySelector("#control_button");
     const buttonFarenheit = document.querySelector("#farenheit");
     const buttonCelsius = document.querySelector("#celsius");
@@ -41,9 +43,6 @@ window.addEventListener("load", function () {
     let city = localStorage.getItem("city");
     let lang = isRu ? "ru" : "en";
     let info = isRu ? LanguageRU : LanguageEN;
-    let weather;
-    let adress;
-
 
 
     // button Language RU and EH
@@ -117,10 +116,10 @@ window.addEventListener("load", function () {
     async function showAdress(latitudeNow, longitudeNow) {
         try {
             adress = await getAdress(latitudeNow, longitudeNow);
-            // console.log(adress);
 
             const locations = adress.results[0].components;
             city = locations.city;
+            // localStorage.setItem("city", city);
             const { country } = locations;
             locationCity.textContent = `${city}, ${country}`;
             showWeatherNow(city);
@@ -139,13 +138,15 @@ window.addEventListener("load", function () {
             if (!city) {
                 city = inputCity.value;
             }
-
             adress = await searchSity(city);
-            // console.log(adress);
+
 
             if (adress) {
                 const result = adress.results[0].components;
                 city = result.city ? result.city : result.town ? result.town : result.village;
+                
+                localStorage.setItem("city", city); // save city in localStorage
+                inputCity.value = "";
 
                 const { country } = result;
                 locationCity.textContent = `${city}, ${country}`;
@@ -155,12 +156,9 @@ window.addEventListener("load", function () {
                 LatitudeNow = Now.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
                 LongitudeNow = Now.lng.toFixed(2);
 
-                localStorage.setItem.json("city", city); // save city in localStorage
-                inputCity.value = "";
-
                 showWeatherNow(city);
-                getCoordinats(LatitudeNow, LongitudeNow);
                 getMap(LatitudeNow, LongitudeNow);
+                getCoordinats(LatitudeNow, LongitudeNow);
             }
         } catch (error) {
             console.error;
@@ -174,7 +172,6 @@ window.addEventListener("load", function () {
     async function showWeatherNow(city) {
         try {
             weather = await getWeatherNow(city);
-            // console.log(weather);
 
             const data = weather.list;
             const feelLike = data[0].main.feels_like;
