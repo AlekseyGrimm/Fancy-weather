@@ -8,6 +8,11 @@ const conf = {
   },
   module: {
     rules: [
+      // {
+      //   test: /\.js$/,
+      //   enforce: "pre",
+      //   use: ["source-map-loader"],
+      // },
       {
         test: /\.js$/,
         use: "babel-loader",
@@ -19,6 +24,7 @@ const conf = {
       },
     ],
   },
+  devtool: 'eval-source-map',
 };
 
 module.exports = conf;

@@ -1,13 +1,9 @@
 import { LanguageEN } from "./En";
 import { LanguageRU } from "./Ru";
 import "./style.css";
-
-
 window.addEventListener("load", function () {
     let latitudeNow;
     let longitudeNow;
-    let weather;
-    let adress;
     const buttonRefresh = document.querySelector("#control_button");
     const buttonFarenheit = document.querySelector("#farenheit");
     const buttonCelsius = document.querySelector("#celsius");
@@ -40,9 +36,11 @@ window.addEventListener("load", function () {
     const isRu = localLang && localLang === "ru";
     const localTemp = localStorage.getItem("isFarengeit")
     let isFarengeit = localTemp === "true";
-    let city = localStorage.getItem("city");
+    let city;
+    //  = localStorage.getItem("city");
     let lang = isRu ? "ru" : "en";
     let info = isRu ? LanguageRU : LanguageEN;
+    let weather;
 
 
     // button Language RU and EH
@@ -59,6 +57,14 @@ window.addEventListener("load", function () {
         }
     };
     initializeLangButton();
+
+    function changeLocalLang() {
+        localStorage.setItem("lang", lang);
+        showAdress(latitudeNow, longitudeNow);
+        showWeatherNow(city);
+        getCoordinats(latitudeNow, longitudeNow);
+    };
+
 
     function langRu() {
         lang = "ru";
@@ -88,6 +94,7 @@ window.addEventListener("load", function () {
             buttonCelsius.classList.remove("active");
         }
     };
+
     TempButton();
 
     // button click C of F
@@ -101,12 +108,6 @@ window.addEventListener("load", function () {
         activeButtonTemp(buttonFarenheit, buttonCelsius);
     };
 
-    function changeLocalLang() {
-        localStorage.setItem("lang", lang);
-        showAdress(latitudeNow, longitudeNow);
-        showWeatherNow(city);
-        getCoordinats(latitudeNow, longitudeNow);
-    };
 
     function getAdress(latitudeNow, longitudeNow) {
         return fetch(`https://api.opencagedata.com/geocode/v1/json?&q=${latitudeNow}+${longitudeNow}&key=7ec9383669c44f36be73334edd48f8b1`)
@@ -115,11 +116,13 @@ window.addEventListener("load", function () {
 
     async function showAdress(latitudeNow, longitudeNow) {
         try {
-            adress = await getAdress(latitudeNow, longitudeNow);
+            const adress = await getAdress(latitudeNow, longitudeNow);
+            console.log(adress);
 
             const locations = adress.results[0].components;
             city = locations.city;
             // localStorage.setItem("city", city);
+
             const { country } = locations;
             locationCity.textContent = `${city}, ${country}`;
             showWeatherNow(city);
@@ -133,35 +136,35 @@ window.addEventListener("load", function () {
             .then((response) => response.json());
     };
 
-    async function showSearchCity(city) {
-        console.log(city);
+    async function showSearchCity(city, LatitudeNow, LongitudeNow) {
         try {
             if (!city) {
                 city = inputCity.value;
             }
-            adress = await searchSity(city);
-            
+            const adress = await searchSity(city);
+
 
             if (adress) {
+
                 const result = adress.results[0].components;
                 city = result.city ? result.city : result.town ? result.town : result.village;
-                
+
                 const { country } = result;
                 locationCity.textContent = `${city}, ${country}`;
 
-                localStorage.setItem("city", city); // save city in localStorage
                 // inputCity.value = "";
 
-                const Now = adress.results[0].geometry;
+                const zyk = adress.results[0].geometry;
 
-                LatitudeNow = Now.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
-                LongitudeNow = Now.lng.toFixed(2);
+                LatitudeNow = zyk.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
+                LongitudeNow = zyk.lng.toFixed(2);
 
+                // localStorage.setItem("city", city); // save city in localStorage
 
-
+                getCoordinats(LatitudeNow, LongitudeNow);
                 showWeatherNow(city);
                 getMap(LatitudeNow, LongitudeNow);
-                getCoordinats(LatitudeNow, LongitudeNow);
+                
             }
         } catch (error) {
             console.error;
@@ -173,8 +176,10 @@ window.addEventListener("load", function () {
             .then((response) => response.json());
 
     async function showWeatherNow(city) {
+
         try {
             weather = await getWeatherNow(city);
+            console.log(weather);
 
             const data = weather.list;
             const feelLike = data[0].main.feels_like;
@@ -201,6 +206,8 @@ window.addEventListener("load", function () {
             iconOne.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[8].weather[0].icon}@2x.png)`;
             iconTwo.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[16].weather[0].icon}@2x.png)`;
             iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
+
+
 
             showTime();
         } catch (error) {
@@ -249,8 +256,11 @@ window.addEventListener("load", function () {
         return (Number.parseInt(n, 10) < 10 ? "0" : "") + n;
     };
 
+
     function initMap() {
         navigator.geolocation.getCurrentPosition(showMap);
+
+        console.log(latitudeNow, longitudeNow);
 
         function showMap(position) {
             latitudeNow = position.coords.latitude.toFixed(2);
@@ -262,8 +272,9 @@ window.addEventListener("load", function () {
         }
     };
 
+    
     // if the city is not found then displays a map with coordinates
-    function initializeCity(city) {
+    function initializeCity() {
         if (city) {
             showSearchCity(city);
         } else {
@@ -271,7 +282,7 @@ window.addEventListener("load", function () {
         }
     };
 
-    initializeCity(city);
+    initializeCity();
 
 
     function getCoordinats(latitudeNow, longitudeNow) {
@@ -294,21 +305,11 @@ window.addEventListener("load", function () {
             container: 'map', // container id
             style: 'mapbox://styles/mapbox/streets-v11', // style URL
             center: [longitudeNow, latitudeNow], // starting position [lng, lat]
-            zoom: 11 // starting zoom
+            zoom: 10 // starting zoom
         });
         const marker = new mapboxgl.Marker()
             .setLngLat([longitudeNow, latitudeNow])
             .addTo(map);
-    };
-
-
-    // add inter
-    function KeyBoard(e) {
-        if (e.which === 13) {
-            console.log(e);
-            showSearchCity(e.target.value);
-
-        }
     };
 
     async function getLinkToImage() {
@@ -329,11 +330,21 @@ window.addEventListener("load", function () {
     };
 
 
+    // add inter
+    function KeyBoard(e) {
+        if (e.which === 13) {
+            console.log(e);
+            showSearchCity();
+        }
+    };
+
+
+
+    buttonSearch.addEventListener("click", showSearchCity);
+    window.addEventListener("keypress", KeyBoard);
     buttonRefresh.addEventListener("click", getBackground);
     buttonEnglishlanguage.addEventListener("click", langEn);
     buttonRussianLanguage.addEventListener("click", langRu);
     buttonCelsius.addEventListener("click", Farenheit);
     buttonFarenheit.addEventListener("click", Celsius);
-    buttonSearch.addEventListener("click", showSearchCity);
-    window.addEventListener("keypress", KeyBoard);
 });
