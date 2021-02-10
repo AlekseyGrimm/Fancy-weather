@@ -36,14 +36,15 @@ const buttonEnglishlanguage = document.querySelector("#language_en");
 const localLang = localStorage.getItem("lang");
 const isRu = localLang && localLang === "ru";
 const localTemp = localStorage.getItem("isFarengeit")
-let isFarengeit = localTemp === "true";
-let city;
-//  = localStorage.getItem("city");
 let lang = isRu ? "ru" : "en";
+let city;
+// = localStorage.getItem('city');
 let info = isRu ? LanguageRU : LanguageEN;
 let weather;
 let latitudeNow;
 let longitudeNow;
+let isFarengeit = localTemp === "true";
+
 
 
 // button Language RU and EH
@@ -88,6 +89,7 @@ function activeButtonTemp(buttonFarenheit, buttonCelsius) {
     buttonFarenheit.classList.remove("active");
     buttonCelsius.classList.add("active");
     localStorage.setItem("isFarengeit", isFarengeit);
+    getCoordinats(latitudeNow, longitudeNow);
     showAdress(latitudeNow, longitudeNow);
     showWeatherNow(city);
 };
@@ -124,14 +126,13 @@ async function showAdress(latitudeNow, longitudeNow) {
         console.log(adress);
 
         const locations = adress.results[0].components;
-        const city = locations.city;
-        // localStorage.setItem("city", city);
+        let city = locations.city;
 
         const { country } = locations;
         locationCity.textContent = `${city}, ${country}`;
         showWeatherNow(city);
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 };
 
@@ -151,19 +152,18 @@ async function showSearchCity(city) {
         if (adress) {
 
             const result = adress.results[0].components;
-            const city = result.city ? result.city : result.town ? result.town : result.village;
+            city = result.city ? result.city : result.town ? result.town : result.village;
 
             const { country } = result;
             locationCity.textContent = `${city}, ${country}`;
 
-            // inputCity.value = "";
 
             const zyk = adress.results[0].geometry;
 
             const LatitudeNow = zyk.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
             const LongitudeNow = zyk.lng.toFixed(2);
 
-            // localStorage.setItem("city", city); // save city in localStorage
+            // localStorage.setItem('city', city); // save city in localStorage
 
             getCoordinats(LatitudeNow, LongitudeNow);
             showWeatherNow(city);
@@ -171,7 +171,7 @@ async function showSearchCity(city) {
 
         }
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 };
 
@@ -185,8 +185,8 @@ async function showWeatherLatLong(LatitudeNow, LongitudeNow) {
         weather = await getWeatherLatLong(LatitudeNow, LongitudeNow);
         console.log(weather);
 
-        const city = weather.city.name;
-        locationCity.textContent = `${city}`;
+
+        locationCity.textContent = `${weather.city.name}`;
 
         const data = weather.list;
         const feelLike = data[0].main.feels_like;
@@ -194,7 +194,6 @@ async function showWeatherLatLong(LatitudeNow, LongitudeNow) {
         const firstTemporary = data[8].main.temp;
         const secTemporary = data[16].main.temp;
         const thirdTemporary = data[24].main.temp;
-
 
         // value Farengeit or celsius
         tempretureNow.textContent = isFarengeit ? `${Math.round(temporaryNow * (9 / 5) + 32)}°` : `${temporaryNow}°`;
@@ -215,21 +214,21 @@ async function showWeatherLatLong(LatitudeNow, LongitudeNow) {
         iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
 
 
-
+        getBackground();
         showTime();
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 };
 
-const getWeatherNow = async () =>
+const getWeatherNow = async (city) =>
     fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${city}&lang=${lang}&units=metric&appid=c3ee163c21d694ddab64849983b70180`)
         .then((response) => response.json());
 
-async function showWeatherNow() {
+async function showWeatherNow(city) {
 
     try {
-        weather = await getWeatherNow();
+        weather = await getWeatherNow(city);
         console.log(weather);
 
         const data = weather.list;
@@ -259,10 +258,10 @@ async function showWeatherNow() {
         iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
 
 
-
+        getBackground();
         showTime();
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 };
 
@@ -308,8 +307,8 @@ function addZero(n) {
 };
 
 function showMap(position) {
-    const latitudeNow = position.coords.latitude.toFixed(2);
-    const longitudeNow = position.coords.longitude.toFixed(2);
+    latitudeNow = position.coords.latitude.toFixed(2);
+    longitudeNow = position.coords.longitude.toFixed(2);
 
     getCoordinats(latitudeNow, longitudeNow);
     showAdress(latitudeNow, longitudeNow);
@@ -379,7 +378,7 @@ async function getBackground() {
         body.style.backgroundImage = `url(${backgroundLink})`;
         body.style.transition = "1s";
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 };
 
