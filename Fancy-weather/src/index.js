@@ -63,7 +63,7 @@ initializeLangButton();
 
 function changeLocalLang() {
     localStorage.setItem("lang", lang);
-    getCoordinats(latitudeNow, longitudeNow);
+    showSearchCity(city);
     showAdress(latitudeNow, longitudeNow);
     showWeatherNow(city, lang);
 
@@ -88,7 +88,7 @@ function activeButtonTemp(buttonFarenheit, buttonCelsius) {
     buttonFarenheit.classList.remove("active");
     buttonCelsius.classList.add("active");
     localStorage.setItem("isFarengeit", isFarengeit);
-    getCoordinats(latitudeNow, longitudeNow);
+    showSearchCity(city);
     showAdress(latitudeNow, longitudeNow);
     showWeatherNow(city);
 };
