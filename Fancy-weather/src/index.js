@@ -37,8 +37,7 @@ const localLang = localStorage.getItem("lang");
 const isRu = localLang && localLang === "ru";
 const localTemp = localStorage.getItem("isFarengeit")
 let lang = isRu ? "ru" : "en";
-let city;
-// = localStorage.getItem('city');
+let city = localStorage.getItem('city');
 let info = isRu ? LanguageRU : LanguageEN;
 let weather;
 let latitudeNow;
@@ -136,7 +135,7 @@ async function showAdress(latitudeNow, longitudeNow) {
     }
 };
 
-function searchSity(city) {
+function searchSity() {
     return fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=7ec9383669c44f36be73334edd48f8b1`)
         .then((response) => response.json());
 };
@@ -386,7 +385,8 @@ async function getBackground() {
 // add inter
 function KeyBoard(e) {
     if (e.which === 13) {
-        console.log(e);
+        city = inputCity.value;
+        localStorage.setItem('city', city);
         showSearchCity();
     }
 };
