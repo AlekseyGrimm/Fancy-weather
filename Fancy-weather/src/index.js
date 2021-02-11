@@ -8,6 +8,7 @@ import "./style.css";
 const buttonRefresh = document.querySelector("#control_button");
 const buttonFarenheit = document.querySelector("#farenheit");
 const buttonCelsius = document.querySelector("#celsius");
+const inputAll = document.querySelector(".search");
 const inputCity = document.querySelector(".search_input");
 const buttonSearch = document.querySelector("#search_button");
 const locationCity = document.querySelector("#location_city");
@@ -40,6 +41,7 @@ let lang = isRu ? "ru" : "en";
 let city = localStorage.getItem('city');
 let info = isRu ? LanguageRU : LanguageEN;
 let weather;
+let id;
 let latitudeNow;
 let longitudeNow;
 let isFarengeit = localTemp === "true";
@@ -125,7 +127,7 @@ async function showAdress(latitudeNow, longitudeNow) {
         console.log(adress);
 
         const locations = adress.results[0].components;
-        let city = locations.city;
+        const city = locations.city;
 
         const { country } = locations;
         locationCity.textContent = `${city}, ${country}`;
@@ -135,11 +137,11 @@ async function showAdress(latitudeNow, longitudeNow) {
     }
 };
 
-function searchSity() {
+function searchSity(city) {
     return fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=7ec9383669c44f36be73334edd48f8b1`)
         .then((response) => response.json());
 };
-
+// &id=${id}
 async function showSearchCity(city) {
     try {
         if (!city) {
@@ -184,43 +186,17 @@ async function showWeatherLatLong(LatitudeNow, LongitudeNow) {
         weather = await getWeatherLatLong(LatitudeNow, LongitudeNow);
         console.log(weather);
 
+        // const id = `${weather.city.id}`;
+        city = `${weather.city.name}`;
 
-        locationCity.textContent = `${weather.city.name}`;
+        showSearchCity(city);
 
-        const data = weather.list;
-        const feelLike = data[0].main.feels_like;
-        const temporaryNow = Math.round(data[0].main.temp);
-        const firstTemporary = data[8].main.temp;
-        const secTemporary = data[16].main.temp;
-        const thirdTemporary = data[24].main.temp;
-
-        // value Farengeit or celsius
-        tempretureNow.textContent = isFarengeit ? `${Math.round(temporaryNow * (9 / 5) + 32)}°` : `${temporaryNow}°`;
-        firstTemperature.textContent = isFarengeit ? `${Math.round(firstTemporary * (9 / 5) + 32)}°` : `${Math.round(firstTemporary)}°`;
-        secondTemperature.textContent = isFarengeit ? `${Math.round(secTemporary * (9 / 5) + 32)}°` : `${Math.round(secTemporary)}°`;
-        thirdTemperature.textContent = isFarengeit ? `${Math.round(thirdTemporary * (9 / 5) + 32)}°` : `${Math.round(thirdTemporary)}°`;
-
-        overcast.textContent = data[0].weather[0].description;
-
-        feelsLike.textContent = isFarengeit ? `${info.summary.feels} ${`${Math.round(feelLike * (9 / 5) + 32)}°`}` : `${info.summary.feels} ${`${Math.round(feelLike)}°`}`;
-        humidity.textContent = `${info.summary.humidity} ${data[0].main.humidity}%`;
-        speedWind.textContent = `${info.summary.wind} ${data[0].wind.speed.toFixed()} ${info.summary.speed}`;
-
-        // img of the current weather
-        iconWeatherNow.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[0].weather[0].icon}@2x.png)`;
-        iconOne.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[8].weather[0].icon}@2x.png)`;
-        iconTwo.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[16].weather[0].icon}@2x.png)`;
-        iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
-
-
-        getBackground();
-        showTime();
     } catch (error) {
         console.log(error);
     }
 };
 
-const getWeatherNow = async (city) =>
+const getWeatherNow = async () =>
     fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${city}&lang=${lang}&units=metric&appid=c3ee163c21d694ddab64849983b70180`)
         .then((response) => response.json());
 
@@ -311,12 +287,14 @@ function showMap(position) {
 
     getCoordinats(latitudeNow, longitudeNow);
     showAdress(latitudeNow, longitudeNow);
+    // showWeatherNow(city);
     showWeatherLatLong(latitudeNow, longitudeNow);
     getMap(latitudeNow, longitudeNow);
 
 };
 
 function errorP(e) {
+    inputAll.classList.toggle('active');
     console.log('nogeolocation', e);
 };
 

@@ -140,6 +140,23 @@ main {
   margin-left: -5px;
 }
 
+.active {
+  border-width: 3px;
+  animation: blink1 1s linear infinite;
+}
+
+@-webkit-keyframes blink1 {
+  100% {
+    border-color: rgba(243, 10, 10, 0);
+  }
+}
+
+@keyframes blink1 {
+  100% {
+    border-color: rgba(243, 241, 241, 0);
+  }
+}
+
 /* WEATHER NOW */
 
 .wrapper_weatherNow {
