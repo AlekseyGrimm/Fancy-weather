@@ -140,11 +140,6 @@ main {
   margin-left: -5px;
 }
 
-.active {
-  border-width: 3px;
-  animation: blink1 1s linear infinite;
-}
-
 @-webkit-keyframes blink1 {
   100% {
     border-color: rgba(243, 10, 10, 0);

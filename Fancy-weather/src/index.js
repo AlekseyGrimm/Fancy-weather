@@ -8,7 +8,6 @@ import "./style.css";
 const buttonRefresh = document.querySelector("#control_button");
 const buttonFarenheit = document.querySelector("#farenheit");
 const buttonCelsius = document.querySelector("#celsius");
-const inputAll = document.querySelector(".search");
 const inputCity = document.querySelector(".search_input");
 const buttonSearch = document.querySelector("#search_button");
 const locationCity = document.querySelector("#location_city");
@@ -124,7 +123,6 @@ function getAdress(latitudeNow, longitudeNow) {
 async function showAdress(latitudeNow, longitudeNow) {
     try {
         adress = await getAdress(latitudeNow, longitudeNow);
-        console.log(adress);
 
         const locations = adress.results[0].components;
         const city = locations.city;
@@ -137,7 +135,7 @@ async function showAdress(latitudeNow, longitudeNow) {
     }
 };
 
-function searchSity(city) {
+function searchSity() {
     return fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=7ec9383669c44f36be73334edd48f8b1`)
         .then((response) => response.json());
 };
@@ -181,16 +179,10 @@ const getWeatherLatLong = async (latitudeNow, longitudeNow) =>
         .then((response) => response.json());
 
 async function showWeatherLatLong(LatitudeNow, LongitudeNow) {
-
     try {
         weather = await getWeatherLatLong(LatitudeNow, LongitudeNow);
-        console.log(weather);
-
-        // const id = `${weather.city.id}`;
         city = `${weather.city.name}`;
-
         showSearchCity(city);
-
     } catch (error) {
         console.log(error);
     }
@@ -204,7 +196,6 @@ async function showWeatherNow(city) {
 
     try {
         weather = await getWeatherNow(city);
-        console.log(weather);
 
         const data = weather.list;
         const feelLike = data[0].main.feels_like;
@@ -294,8 +285,10 @@ function showMap(position) {
 };
 
 function errorP(e) {
-    inputAll.classList.toggle('active');
-    console.log('nogeolocation', e);
+    const input = document.querySelector(".search_input");
+    input.style.borderWidth = "3px";
+    input.style.borderColor = "red";
+    input.style.animation = "blink1 1s linear infinite";
 };
 
 function initMap() {
