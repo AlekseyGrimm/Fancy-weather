@@ -2,9 +2,6 @@ import { LanguageEN } from "./En";
 import { LanguageRU } from "./Ru";
 import "./style.css";
 
-
-// window.addEventListener("load", function () {
-
 const buttonRefresh = document.querySelector("#control_button");
 const buttonFarenheit = document.querySelector("#farenheit");
 const buttonCelsius = document.querySelector("#celsius");
@@ -40,12 +37,9 @@ let lang = isRu ? "ru" : "en";
 let city = localStorage.getItem('city');
 let info = isRu ? LanguageRU : LanguageEN;
 let weather;
-let id;
 let latitudeNow;
 let longitudeNow;
 let isFarengeit = localTemp === "true";
-
-
 
 // button Language RU and EH
 function activeButtonLang(buttonRussianLanguage, buttonEnglishlanguage) {
@@ -65,9 +59,6 @@ initializeLangButton();
 function changeLocalLang() {
     localStorage.setItem("lang", lang);
     showSearchCity(city);
-    showAdress(latitudeNow, longitudeNow);
-    showWeatherNow(city, lang);
-
 };
 
 
@@ -90,8 +81,6 @@ function activeButtonTemp(buttonFarenheit, buttonCelsius) {
     buttonCelsius.classList.add("active");
     localStorage.setItem("isFarengeit", isFarengeit);
     showSearchCity(city);
-    showAdress(latitudeNow, longitudeNow);
-    showWeatherNow(city);
 };
 
 function TempButton() {
@@ -123,10 +112,8 @@ function getAdress(latitudeNow, longitudeNow) {
 async function showAdress(latitudeNow, longitudeNow) {
     try {
         adress = await getAdress(latitudeNow, longitudeNow);
-
         const locations = adress.results[0].components;
         const city = locations.city;
-
         const { country } = locations;
         locationCity.textContent = `${city}, ${country}`;
         showWeatherNow(city);
@@ -147,7 +134,6 @@ async function showSearchCity(city) {
         }
         const adress = await searchSity(city);
 
-
         if (adress) {
 
             const result = adress.results[0].components;
@@ -156,13 +142,9 @@ async function showSearchCity(city) {
             const { country } = result;
             locationCity.textContent = `${city}, ${country}`;
 
-
             const zyk = adress.results[0].geometry;
-
             const LatitudeNow = zyk.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
             const LongitudeNow = zyk.lng.toFixed(2);
-
-            // localStorage.setItem('city', city); // save city in localStorage
 
             getCoordinats(LatitudeNow, LongitudeNow);
             showWeatherNow(city);
@@ -196,14 +178,12 @@ async function showWeatherNow(city) {
 
     try {
         weather = await getWeatherNow(city);
-
         const data = weather.list;
         const feelLike = data[0].main.feels_like;
         const temporaryNow = Math.round(data[0].main.temp);
         const firstTemporary = data[8].main.temp;
         const secTemporary = data[16].main.temp;
         const thirdTemporary = data[24].main.temp;
-
 
         // value Farengeit or celsius
         tempretureNow.textContent = isFarengeit ? `${Math.round(temporaryNow * (9 / 5) + 32)}°` : `${temporaryNow}°`;
@@ -222,7 +202,6 @@ async function showWeatherNow(city) {
         iconOne.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[8].weather[0].icon}@2x.png)`;
         iconTwo.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[16].weather[0].icon}@2x.png)`;
         iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
-
 
         getBackground();
         showTime();
@@ -243,7 +222,6 @@ function showTime() {
     let dayofWeek = today.getDay();
     const dayNumber = today.getDate();
     const month = today.getMonth();
-
     dateNow.textContent = `${info.dayOfWeekAbbreviated[dayofWeek]} ${dayNumber} ${info.months[month]}`;
     dayofWeek++;
 
@@ -251,18 +229,23 @@ function showTime() {
         dayofWeek = 0;
         firstDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
     }
+
     firstDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
     dayofWeek++;
+
     if (dayofWeek > 6) {
         dayofWeek = 0;
         secondDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
     }
+
     secondDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
     dayofWeek++;
+
     if (dayofWeek > 6) {
         dayofWeek = 0;
         thirdDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
     }
+
     thirdDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
 
     setTimeout(showTime, 1000);
@@ -275,16 +258,13 @@ function addZero(n) {
 function showMap(position) {
     latitudeNow = position.coords.latitude.toFixed(2);
     longitudeNow = position.coords.longitude.toFixed(2);
-
     getCoordinats(latitudeNow, longitudeNow);
     showAdress(latitudeNow, longitudeNow);
-    // showWeatherNow(city);
     showWeatherLatLong(latitudeNow, longitudeNow);
     getMap(latitudeNow, longitudeNow);
-
 };
 
-function errorP(e) {
+function noPosition() {
     const input = document.querySelector(".search_input");
     input.style.borderWidth = "3px";
     input.style.borderColor = "red";
@@ -292,9 +272,8 @@ function errorP(e) {
 };
 
 function initMap() {
-    navigator.geolocation.getCurrentPosition(showMap, errorP);
+    navigator.geolocation.getCurrentPosition(showMap, noPosition);
 };
-
 
 // if the city is not found then displays a map with coordinates
 function initializeCity() {
@@ -306,7 +285,6 @@ function initializeCity() {
 };
 
 initializeCity();
-
 
 function getCoordinats(latitudeNow, longitudeNow) {
     const lat = String(latitudeNow).split(".");
@@ -336,7 +314,7 @@ function getMap(latitudeNow, longitudeNow) {
 };
 
 async function getLinkToImage() {
-    const url = 'https://api.unsplash.com/photos/random?query=morning&client_id=e2077ad31a806c894c460aec8f81bc2af4d09c4f8104ae3177bb809faf0eac17';
+    const url = 'https://api.unsplash.com/photos/random?query=morning&client_id=njpPeASTxZr7ZpJtq-JokPEQFvKKFLwCXKqboncAt0Y';
     const res = await fetch(url);
     const data = await res.json();
     return data.urls.regular;
@@ -352,7 +330,6 @@ async function getBackground() {
     }
 };
 
-
 // add inter
 function KeyBoard(e) {
     if (e.which === 13) {
@@ -362,13 +339,17 @@ function KeyBoard(e) {
     }
 };
 
+buttonSearch.onclick = function (e) {
+    if (e.which == 1) {
+        city = inputCity.value;
+        localStorage.setItem('city', city);
+        showSearchCity();
+    }
+};
 
-
-buttonSearch.addEventListener("click", showSearchCity);
 window.addEventListener("keypress", KeyBoard);
 buttonRefresh.addEventListener("click", getBackground);
 buttonEnglishlanguage.addEventListener("click", langEn);
 buttonRussianLanguage.addEventListener("click", langRu);
 buttonCelsius.addEventListener("click", Celsius);
 buttonFarenheit.addEventListener("click", Farenheit);
-// });
