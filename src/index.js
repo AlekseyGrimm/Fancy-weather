@@ -158,7 +158,7 @@ async function showSearchCity(city, lang) {
 };
 
 const getWeatherLatLong = async (latitudeNow, longitudeNow) =>
-    fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${latitudeNow}&lon=${longitudeNow}&units=metric&appid=c3ee163c21d694ddab64849983b70180`)
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitudeNow}&lon=${longitudeNow}&units=metric&appid=c3ee163c21d694ddab64849983b70180`)
         .then((response) => response.json());
 
 async function showWeatherLatLong(LatitudeNow, LongitudeNow) {
@@ -172,7 +172,7 @@ async function showWeatherLatLong(LatitudeNow, LongitudeNow) {
 };
 
 const getWeatherNow = async (city, lang) =>
-    fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${city}&lang=${lang}&units=metric&appid=c3ee163c21d694ddab64849983b70180`)
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&lang=${lang}&units=metric&appid=c3ee163c21d694ddab64849983b70180`)
         .then((response) => response.json());
 
 async function showWeatherNow(city, lang) {
