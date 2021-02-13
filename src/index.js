@@ -54,22 +54,6 @@ function initializeLangButton() {
 };
 initializeLangButton();
 
-// function changeLocalLang(lang) {
-//     localStorage.setItem("lang", lang);
-//     showSearchCity(lang);
-//     if (lang === 'ru') {
-//         info = LanguageRU;
-//         buttonRussianLanguage.classList.add("active");
-//         buttonRussianLanguage.classList.remove("not_active");
-
-//     } else {
-//         info = LanguageEN;
-//         buttonEnglishlanguage.classList.remove("active");
-//         buttonEnglishlanguage.classList.add("not_active");
-//     }
-// }; // переделать языки и перелать город! из локала
-// changeLocalLang();
-
 function changeLocalLang() {
     const lang = localStorage.getItem("lang");
     const city = localStorage.getItem("city");
@@ -368,7 +352,7 @@ buttonSearch.onclick = function (e) {
 
 window.addEventListener("keypress", KeyBoard);
 buttonRefresh.addEventListener("click", getBackground);
-buttonEnglishlanguage.addEventListener("click", langEn); // один хендлер на две кнопки евентом
+buttonEnglishlanguage.addEventListener("click", langEn);
 buttonRussianLanguage.addEventListener("click", langRu);
 buttonCelsius.addEventListener("click", Celsius);
 buttonFarenheit.addEventListener("click", Farenheit);
