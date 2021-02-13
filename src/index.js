@@ -338,7 +338,8 @@ function KeyBoard(e) {
     if (e.which === 13) {
         const city = inputCity.value;
         localStorage.setItem('city', city);
-        showSearchCity(city);
+        const lang = localStorage.getItem("lang");
+        showSearchCity(city, lang);
     }
 };
 
@@ -346,7 +347,8 @@ buttonSearch.onclick = function (e) {
     if (e.which == 1) {
         const city = inputCity.value;
         localStorage.setItem('city', city);
-        showSearchCity(city);
+        const lang = localStorage.getItem("lang");
+        showSearchCity(city, lang);
     }
 };
 
