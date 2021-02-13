@@ -204,7 +204,6 @@ async function showWeatherNow(city, lang) {
         iconTwo.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[16].weather[0].icon}@2x.png)`;
         iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
 
-        getBackground();
         showTime();
     } catch (error) {
         console.log(error);
@@ -340,6 +339,7 @@ function KeyBoard(e) {
         localStorage.setItem('city', city);
         const lang = localStorage.getItem("lang");
         showSearchCity(city, lang);
+        getBackground()
     }
 };
 
@@ -349,6 +349,7 @@ buttonSearch.onclick = function (e) {
         localStorage.setItem('city', city);
         const lang = localStorage.getItem("lang");
         showSearchCity(city, lang);
+        getBackground()
     }
 };
 
