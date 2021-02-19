@@ -71,14 +71,14 @@ function langEn() {
     changeLocalLang(lang);
 };
 
-function setFarenheit(isFarengeit) {
+function setFarenheit(isFahrenheit) {
     const buttonCelsius = document.getElementById('celsius');
     const buttonFarenheit = document.getElementById('farenheit');
-    localStorage.setItem("isFarenheit", isFarengeit);
+    localStorage.setItem("isFahrenheit", isFahrenheit);
     const lang = localStorage.getItem("lang");
     const city = localStorage.getItem("city");
     showSearchCity(city, lang);
-    if (isFarengeit) {
+    if (isFahrenheit) {
         buttonFarenheit.classList.add('active');
         buttonCelsius.classList.remove('active');
     } else {
@@ -99,14 +99,14 @@ async function showAdress(latitudeNow, longitudeNow) {
         const city = locations.city;
         const { country } = locations;
         locationCity.textContent = `${city}, ${country}`;
-        const lang = localStorage.getItem('lang')
-        showWeatherNow(city, lang);
+        const lang = localStorage.getItem('lang');
+        showSearchCity(city, lang)
     } catch (error) {
         console.log(error);
     }
 };
 
-function searchCity(city, lang) {
+function getAdressByCity(city, lang) {
     return fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&language=${lang}&key=7ec9383669c44f36be73334edd48f8b1`)
         .then((response) => response.json());
 };
@@ -116,22 +116,26 @@ async function showSearchCity(city, lang) {
         if (!city) {
             city = inputCity.value;
         }
-        const adress = await searchCity(city, lang);
+        const adress = await getAdressByCity(city, lang);
 
         if (adress) {
 
             const result = adress.results[0].components;
             const city = result.city ? result.city : result.town ? result.town : result.village;
+            localStorage.setItem('city', city);
 
             const { country } = result;
             locationCity.textContent = `${city}, ${country}`;
 
-            const zyk = adress.results[0].geometry;
-            const LatitudeNow = zyk.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
-            const LongitudeNow = zyk.lng.toFixed(2);
+            const geometry = adress.results[0].geometry;
+            const LatitudeNow = geometry.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
+            const LongitudeNow = geometry.lng.toFixed(2);
+            const isFahrenheit = localStorage.getItem('isFahrenheit');
+            const units = isFahrenheit ? 'imperial' : 'metric';
+            console.log(isFahrenheit);
 
-            getCoordinats(LatitudeNow, LongitudeNow);
-            showWeatherNow(city, lang);
+            showCoordinats(LatitudeNow, LongitudeNow);
+            showWeatherNow(city, lang, units);
             getMap(LatitudeNow, LongitudeNow);
 
         }
@@ -140,46 +144,31 @@ async function showSearchCity(city, lang) {
     }
 };
 
-const getWeatherLatLong = async (latitudeNow, longitudeNow) =>
-    fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitudeNow}&lon=${longitudeNow}&units=metric&appid=c3ee163c21d694ddab64849983b70180`)
+const getWeatherNow = async (city, lang, units) =>
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&lang=${lang}&units=${units}&appid=c3ee163c21d694ddab64849983b70180`)
         .then((response) => response.json());
 
-async function showWeatherLatLong(LatitudeNow, LongitudeNow) {
-    try {
-        const weather = await getWeatherLatLong(LatitudeNow, LongitudeNow);
-        const city = `${weather.city.name}`;
-        showSearchCity(city);
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-const getWeatherNow = async (city, lang) =>
-    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&lang=${lang}&units=metric&appid=c3ee163c21d694ddab64849983b70180`)
-        .then((response) => response.json());
-
-async function showWeatherNow(city, lang) {
+async function showWeatherNow(city, lang, units) {
 
     try {
-        const weather = await getWeatherNow(city, lang);
+        console.log('showWeatherNow units', units);
+        const weather = await getWeatherNow(city, lang, units);
         const data = weather.list;
         const feelLike = data[0].main.feels_like;
         const temporaryNow = Math.round(data[0].main.temp);
         const firstTemporary = data[8].main.temp;
         const secTemporary = data[16].main.temp;
         const thirdTemporary = data[24].main.temp;
-        const localDeg = localStorage.getItem('isFarenheit');
-        const isFarenheit = localDeg && localDeg === "true";
+        const timezone = weather.city.timezone;
 
-        // value Farengeit or celsius
-        tempretureNow.textContent = isFarenheit ? `${Math.round(temporaryNow * (9 / 5) + 32)}°` : `${temporaryNow}°`;
-        firstTemperature.textContent = isFarenheit ? `${Math.round(firstTemporary * (9 / 5) + 32)}°` : `${Math.round(firstTemporary)}°`;
-        secondTemperature.textContent = isFarenheit ? `${Math.round(secTemporary * (9 / 5) + 32)}°` : `${Math.round(secTemporary)}°`;
-        thirdTemperature.textContent =  isFarenheit ? `${Math.round(thirdTemporary * (9 / 5) + 32)}°` : `${Math.round(thirdTemporary)}°`;
+        tempretureNow.textContent = `${temporaryNow}°`;
+        firstTemperature.textContent = `${Math.round(firstTemporary)}°`;
+        secondTemperature.textContent =`${Math.round(secTemporary)}°`;
+        thirdTemperature.textContent = `${Math.round(thirdTemporary)}°`;
 
         overcast.textContent = data[0].weather[0].description;
 
-        feelsLike.textContent = isFarenheit ? `${info.summary.feels} ${`${Math.round(feelLike * (9 / 5) + 32)}°`}` : `${info.summary.feels} ${`${Math.round(feelLike)}°`}`;
+        feelsLike.textContent = `${info.summary.feels} ${`${Math.round(feelLike)}°`}`;
         humidity.textContent = `${info.summary.humidity} ${data[0].main.humidity}%`;
         speedWind.textContent = `${info.summary.wind} ${data[0].wind.speed.toFixed()} ${info.summary.speed}`;
 
@@ -189,16 +178,16 @@ async function showWeatherNow(city, lang) {
         iconTwo.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[16].weather[0].icon}@2x.png)`;
         iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
 
-        showTime();
+        showTime(timezone);
     } catch (error) {
         console.log(error);
     }
 };
 
-function showTime() {
+function showTime(timezone) {
     const now = new Date();
     const currentTimeZoneOffsetInHours = now.getTimezoneOffset() * 60000;
-    const localTime = now.getTime() + currentTimeZoneOffsetInHours + weather.city.timezone * 1000;
+    const localTime = now.getTime() + currentTimeZoneOffsetInHours + timezone * 1000;
     const today = new Date(localTime);
     const hour = today.getHours();
     const min = today.getMinutes();
@@ -233,7 +222,7 @@ function showTime() {
 
     thirdDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
 
-    setTimeout(showTime, 1000);
+    // setTimeout(showTime, 1000);
 };
 
 function addZero(n) {
@@ -241,11 +230,10 @@ function addZero(n) {
 };
 
 function showMap(position) {
-    latitudeNow = position.coords.latitude.toFixed(2);
-    longitudeNow = position.coords.longitude.toFixed(2);
-    getCoordinats(latitudeNow, longitudeNow);
+    const latitudeNow = position.coords.latitude.toFixed(2);
+    const longitudeNow = position.coords.longitude.toFixed(2);
+    showCoordinats(latitudeNow, longitudeNow);
     showAdress(latitudeNow, longitudeNow);
-    showWeatherLatLong(latitudeNow, longitudeNow);
     getMap(latitudeNow, longitudeNow);
 };
 
@@ -261,12 +249,12 @@ function initMap() {
 
 // if the city is not found then displays a map with coordinates
 function initializeCity() {
-    const isFarenheit = localStorage.getItem('isFarenheit');
-    isFarenheit ? true : false;
-    const lang = isRu ? "ru" : "en";
+    const isFahrenheit = localStorage.getItem('isFahrenheit') || false;
+    const units = isFahrenheit ? 'imperial' : 'metric';
+    const lang = localStorage.getItem("lang") || 'ru';
     const city = localStorage.getItem('city');
     if (city) {
-        showSearchCity(city, lang);
+        showSearchCity(city, lang, units);
     } else {
         initMap();
     }
@@ -274,7 +262,7 @@ function initializeCity() {
 
 initializeCity();
 
-function getCoordinats(latitudeNow, longitudeNow) {
+function showCoordinats(latitudeNow, longitudeNow) { // переименовать show
     const lat = String(latitudeNow).split(".");
     const lon = String(longitudeNow).split(".");
     const latMinutes = lat[0];
@@ -322,17 +310,15 @@ async function getBackground() {
 function KeyBoard(e) {
     if (e.which === 13) {
         const city = inputCity.value;
-        localStorage.setItem('city', city);
         const lang = localStorage.getItem("lang");
         showSearchCity(city, lang);
         getBackground()
     }
 };
 
-buttonSearch.onclick = function (e) {
+buttonSearch.onclick = function (e) { //mouse click
     if (e.which == 1) {
         const city = inputCity.value;
-        localStorage.setItem('city', city);
         const lang = localStorage.getItem("lang");
         showSearchCity(city, lang);
         getBackground()
