@@ -98,7 +98,7 @@ async function showAdress(latitudeNow, longitudeNow) {
         const locations = adress.results[0].components;
         const city = locations.city;
         const { country } = locations;
-        locationCity.textContent = `${city}, ${country}`;
+        // locationCity.textContent = `${city}, ${country}`;
         const lang = localStorage.getItem('lang');
         showSearchCity(city, lang)
     } catch (error) {
@@ -111,6 +111,14 @@ function getAdressByCity(city, lang) {
         .then((response) => response.json());
 };
 
+ /**
+   * show Weather by city
+   *
+   * @param {String} city
+   * @param {String} lang language
+   * @return {void}
+   * 
+   */
 async function showSearchCity(city, lang) {
     try {
         if (!city) {
@@ -119,25 +127,23 @@ async function showSearchCity(city, lang) {
         const adress = await getAdressByCity(city, lang);
 
         if (adress) {
-
             const result = adress.results[0].components;
-            const city = result.city ? result.city : result.town ? result.town : result.village;
-            localStorage.setItem('city', city);
-
+            const cityName = result.city ? result.city : result.town ? result.town : result.village;
+                if (cityName){
+                    localStorage.setItem('city', cityName);
             const { country } = result;
-            locationCity.textContent = `${city}, ${country}`;
+            locationCity.textContent = `${cityName}, ${country}`;
 
             const geometry = adress.results[0].geometry;
             const LatitudeNow = geometry.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
             const LongitudeNow = geometry.lng.toFixed(2);
-            const isFahrenheit = localStorage.getItem('isFahrenheit');
+            const isFahrenheit = localStorage.getItem('isFahrenheit') === 'true';
             const units = isFahrenheit ? 'imperial' : 'metric';
-            console.log(isFahrenheit);
 
             showCoordinats(LatitudeNow, LongitudeNow);
-            showWeatherNow(city, lang, units);
+            showWeatherNow(cityName, lang, units);
             getMap(LatitudeNow, LongitudeNow);
-
+            }            
         }
     } catch (error) {
         console.log(error);
@@ -151,7 +157,6 @@ const getWeatherNow = async (city, lang, units) =>
 async function showWeatherNow(city, lang, units) {
 
     try {
-        console.log('showWeatherNow units', units);
         const weather = await getWeatherNow(city, lang, units);
         const data = weather.list;
         const feelLike = data[0].main.feels_like;
@@ -159,7 +164,6 @@ async function showWeatherNow(city, lang, units) {
         const firstTemporary = data[8].main.temp;
         const secTemporary = data[16].main.temp;
         const thirdTemporary = data[24].main.temp;
-        const timezone = weather.city.timezone;
 
         tempretureNow.textContent = `${temporaryNow}°`;
         firstTemperature.textContent = `${Math.round(firstTemporary)}°`;
@@ -178,16 +182,16 @@ async function showWeatherNow(city, lang, units) {
         iconTwo.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[16].weather[0].icon}@2x.png)`;
         iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
 
-        showTime(timezone);
+        showTime();
     } catch (error) {
         console.log(error);
     }
 };
 
-function showTime(timezone) {
+function showTime() {
     const now = new Date();
     const currentTimeZoneOffsetInHours = now.getTimezoneOffset() * 60000;
-    const localTime = now.getTime() + currentTimeZoneOffsetInHours + timezone * 1000;
+    const localTime = now.getTime() + currentTimeZoneOffsetInHours + weather.city.timezone * 1000;
     const today = new Date(localTime);
     const hour = today.getHours();
     const min = today.getMinutes();
@@ -222,7 +226,7 @@ function showTime(timezone) {
 
     thirdDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
 
-    // setTimeout(showTime, 1000);
+    setTimeout(showTime, 1000);
 };
 
 function addZero(n) {
@@ -249,12 +253,12 @@ function initMap() {
 
 // if the city is not found then displays a map with coordinates
 function initializeCity() {
-    const isFahrenheit = localStorage.getItem('isFahrenheit') || false;
+    const isFahrenheit = localStorage.getItem('isFahrenheit') === 'true';
     const units = isFahrenheit ? 'imperial' : 'metric';
     const lang = localStorage.getItem("lang") || 'ru';
     const city = localStorage.getItem('city');
     if (city) {
-        showSearchCity(city, lang, units);
+        showWeatherNow(city, lang, units);
     } else {
         initMap();
     }
