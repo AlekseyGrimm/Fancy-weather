@@ -30,9 +30,9 @@ const secondTemperature = document.querySelector("#secondTemperature");
 const thirdTemperature = document.querySelector("#thirdTemperature");
 const buttonRussianLanguage = document.querySelector("#language_ru");
 const buttonEnglishlanguage = document.querySelector("#language_en");
-const localLang = localStorage.getItem("lang");
-const isRu = localLang && localLang === "ru";
-let info = isRu ? LanguageRU : LanguageEN;
+const localLang = localStorage.getItem("lang") === 'ru';
+// const isRu = localLang && localLang === "ru";
+let info = localLang ? LanguageRU : LanguageEN;
 
 // button Language RU and EH
 function activeButtonLang(buttonRussianLanguage, buttonEnglishlanguage) {
@@ -42,33 +42,17 @@ function activeButtonLang(buttonRussianLanguage, buttonEnglishlanguage) {
     buttonEnglishlanguage.classList.add("not_active");
 };
 
-function initializeLangButton() {
-    if (isRu) {
-        activeButtonLang(buttonRussianLanguage, buttonEnglishlanguage);
-    }
-};
-initializeLangButton();
-
-function changeLocalLang() {
-    const lang = localStorage.getItem("lang");
-    const city = localStorage.getItem("city");
+function setLang(lang){
+    const city = localStorage.getItem('city');
+    localStorage.setItem("lang", lang);
     showSearchCity(city, lang);
-};
-
-function langRu() {
-    const lang = 'ru';
-    localStorage.setItem("lang", lang);
-    info = LanguageRU;
-    activeButtonLang(buttonRussianLanguage, buttonEnglishlanguage);
-    changeLocalLang(lang);
-};
-
-function langEn() {
-    const lang = 'en';
-    localStorage.setItem("lang", lang);
-    info = LanguageEN;
-    activeButtonLang(buttonEnglishlanguage, buttonRussianLanguage);
-    changeLocalLang(lang);
+    if (lang === 'ru'){
+        activeButtonLang(buttonRussianLanguage, buttonEnglishlanguage);
+        info = LanguageRU;      
+    } else {
+        activeButtonLang(buttonEnglishlanguage, buttonRussianLanguage);
+        info = LanguageEN;
+    }
 };
 
 function setFarenheit(isFahrenheit) {
@@ -98,7 +82,6 @@ async function showAdress(latitudeNow, longitudeNow) {
         const locations = adress.results[0].components;
         const city = locations.city;
         const { country } = locations;
-        // locationCity.textContent = `${city}, ${country}`;
         const lang = localStorage.getItem('lang');
         showSearchCity(city, lang)
     } catch (error) {
@@ -125,8 +108,7 @@ async function showSearchCity(city, lang) {
             city = inputCity.value;
         }
         const adress = await getAdressByCity(city, lang);
-
-        if (adress) {
+        if (adress && adress.results[0]) {
             const result = adress.results[0].components;
             const cityName = result.city ? result.city : result.town ? result.town : result.village;
                 if (cityName){
@@ -164,6 +146,7 @@ async function showWeatherNow(city, lang, units) {
         const firstTemporary = data[8].main.temp;
         const secTemporary = data[16].main.temp;
         const thirdTemporary = data[24].main.temp;
+        const timezone =  weather.city.timezone;
 
         tempretureNow.textContent = `${temporaryNow}°`;
         firstTemperature.textContent = `${Math.round(firstTemporary)}°`;
@@ -182,16 +165,16 @@ async function showWeatherNow(city, lang, units) {
         iconTwo.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[16].weather[0].icon}@2x.png)`;
         iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
 
-        showTime();
+        showTime(timezone);
     } catch (error) {
         console.log(error);
     }
 };
 
-function showTime() {
+function showTime(timezone) {
     const now = new Date();
     const currentTimeZoneOffsetInHours = now.getTimezoneOffset() * 60000;
-    const localTime = now.getTime() + currentTimeZoneOffsetInHours + weather.city.timezone * 1000;
+    const localTime = now.getTime() + currentTimeZoneOffsetInHours + timezone * 1000;
     const today = new Date(localTime);
     const hour = today.getHours();
     const min = today.getMinutes();
@@ -226,7 +209,7 @@ function showTime() {
 
     thirdDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
 
-    setTimeout(showTime, 1000);
+    setTimeout(showTime, 1000, timezone);
 };
 
 function addZero(n) {
@@ -253,12 +236,10 @@ function initMap() {
 
 // if the city is not found then displays a map with coordinates
 function initializeCity() {
-    const isFahrenheit = localStorage.getItem('isFahrenheit') === 'true';
-    const units = isFahrenheit ? 'imperial' : 'metric';
     const lang = localStorage.getItem("lang") || 'ru';
     const city = localStorage.getItem('city');
     if (city) {
-        showWeatherNow(city, lang, units);
+        showSearchCity(city, lang);
     } else {
         initMap();
     }
@@ -314,6 +295,7 @@ async function getBackground() {
 function KeyBoard(e) {
     if (e.which === 13) {
         const city = inputCity.value;
+        console.log(city);
         const lang = localStorage.getItem("lang");
         showSearchCity(city, lang);
         getBackground()
@@ -331,7 +313,7 @@ buttonSearch.onclick = function (e) { //mouse click
 
 window.addEventListener("keypress", KeyBoard);
 buttonRefresh.addEventListener("click", getBackground);
-buttonEnglishlanguage.addEventListener("click", langEn);
-buttonRussianLanguage.addEventListener("click", langRu);
+buttonRussianLanguage.addEventListener("click", () => setLang('ru'))
+buttonEnglishlanguage.addEventListener("click", () => setLang('en'))
 buttonFarenheit.addEventListener("click", () => setFarenheit(true));
 buttonCelsius.addEventListener("click", () => setFarenheit(false));
