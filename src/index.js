@@ -42,13 +42,13 @@ function activeButtonLang(buttonRussianLanguage, buttonEnglishlanguage) {
     buttonEnglishlanguage.classList.add("not_active");
 };
 
-function setLang(lang){
+function setLang(lang) {
     const city = localStorage.getItem('city');
     localStorage.setItem("lang", lang);
     showSearchCity(city, lang);
-    if (lang === 'ru'){
+    if (lang === 'ru') {
         activeButtonLang(buttonRussianLanguage, buttonEnglishlanguage);
-        info = LanguageRU;      
+        info = LanguageRU;
     } else {
         activeButtonLang(buttonEnglishlanguage, buttonRussianLanguage);
         info = LanguageEN;
@@ -94,14 +94,14 @@ function getAdressByCity(city, lang) {
         .then((response) => response.json());
 };
 
- /**
-   * show Weather by city
-   *
-   * @param {String} city
-   * @param {String} lang language
-   * @return {void}
-   * 
-   */
+/**
+  * show Weather by city
+  *
+  * @param {String} city
+  * @param {String} lang language
+  * @return {void}
+  * 
+  */
 async function showSearchCity(city, lang) {
     try {
         if (!city) {
@@ -111,21 +111,21 @@ async function showSearchCity(city, lang) {
         if (adress && adress.results[0]) {
             const result = adress.results[0].components;
             const cityName = result.city ? result.city : result.town ? result.town : result.village;
-                if (cityName){
-                    localStorage.setItem('city', cityName);
-            const { country } = result;
-            locationCity.textContent = `${cityName}, ${country}`;
+            if (cityName) {
+                localStorage.setItem('city', cityName);
+                const { country } = result;
+                locationCity.textContent = `${cityName}, ${country}`;
 
-            const geometry = adress.results[0].geometry;
-            const LatitudeNow = geometry.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
-            const LongitudeNow = geometry.lng.toFixed(2);
-            const isFahrenheit = localStorage.getItem('isFahrenheit') === 'true';
-            const units = isFahrenheit ? 'imperial' : 'metric';
+                const geometry = adress.results[0].geometry;
+                const LatitudeNow = geometry.lat.toFixed(2); //show lat and lng formats a number using fixed-point notation 
+                const LongitudeNow = geometry.lng.toFixed(2);
+                const isFahrenheit = localStorage.getItem('isFahrenheit') === 'true';
+                const units = isFahrenheit ? 'imperial' : 'metric';
 
-            showCoordinats(LatitudeNow, LongitudeNow);
-            showWeatherNow(cityName, lang, units);
-            getMap(LatitudeNow, LongitudeNow);
-            }            
+                showCoordinats(LatitudeNow, LongitudeNow);
+                showWeatherNow(cityName, lang, units);
+                getMap(LatitudeNow, LongitudeNow);
+            } 
         }
     } catch (error) {
         console.log(error);
@@ -146,11 +146,11 @@ async function showWeatherNow(city, lang, units) {
         const firstTemporary = data[8].main.temp;
         const secTemporary = data[16].main.temp;
         const thirdTemporary = data[24].main.temp;
-        const timezone =  weather.city.timezone;
+        const timezone = weather.city.timezone;
 
         tempretureNow.textContent = `${temporaryNow}°`;
         firstTemperature.textContent = `${Math.round(firstTemporary)}°`;
-        secondTemperature.textContent =`${Math.round(secTemporary)}°`;
+        secondTemperature.textContent = `${Math.round(secTemporary)}°`;
         thirdTemperature.textContent = `${Math.round(thirdTemporary)}°`;
 
         overcast.textContent = data[0].weather[0].description;
@@ -295,7 +295,6 @@ async function getBackground() {
 function KeyBoard(e) {
     if (e.which === 13) {
         const city = inputCity.value;
-        console.log(city);
         const lang = localStorage.getItem("lang");
         showSearchCity(city, lang);
         getBackground()
