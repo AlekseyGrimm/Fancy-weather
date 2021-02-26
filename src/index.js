@@ -31,7 +31,6 @@ const thirdTemperature = document.querySelector("#thirdTemperature");
 const buttonRussianLanguage = document.querySelector("#language_ru");
 const buttonEnglishlanguage = document.querySelector("#language_en");
 const localLang = localStorage.getItem("lang") === 'ru';
-// const isRu = localLang && localLang === "ru";
 let info = localLang ? LanguageRU : LanguageEN;
 
 // button Language RU and EH
@@ -147,7 +146,9 @@ async function showWeatherNow(city, lang, units) {
         const secTemporary = data[16].main.temp;
         const thirdTemporary = data[24].main.temp;
         const timezone = weather.city.timezone;
-
+        localStorage.setItem('timezone', timezone);
+        
+       
         tempretureNow.textContent = `${temporaryNow}°`;
         firstTemperature.textContent = `${Math.round(firstTemporary)}°`;
         secondTemperature.textContent = `${Math.round(secTemporary)}°`;
@@ -164,14 +165,18 @@ async function showWeatherNow(city, lang, units) {
         iconOne.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[8].weather[0].icon}@2x.png)`;
         iconTwo.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[16].weather[0].icon}@2x.png)`;
         iconThree.style.backgroundImage = `url(http://openweathermap.org/img/wn/${data[24].weather[0].icon}@2x.png)`;
+        
+        
+        
 
-        showTime(timezone);
+        showTime();
     } catch (error) {
         console.log(error);
     }
 };
 
-function showTime(timezone) {
+function showTime() {
+    const timezone = localStorage.getItem('timezone');
     const now = new Date();
     const currentTimeZoneOffsetInHours = now.getTimezoneOffset() * 60000;
     const localTime = now.getTime() + currentTimeZoneOffsetInHours + timezone * 1000;
@@ -207,14 +212,18 @@ function showTime(timezone) {
         thirdDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
     }
 
-    thirdDay.textContent = `${info.dayOfWeek[dayofWeek]}`;
-
+    thirdDay.textContent = `${info.dayOfWeek[dayofWeek]}`; 
+    
     setTimeout(showTime, 1000, timezone);
+
 };
+
 
 function addZero(n) {
     return (Number.parseInt(n, 10) < 10 ? "0" : "") + n;
 };
+
+
 
 function showMap(position) {
     const latitudeNow = position.coords.latitude.toFixed(2);
